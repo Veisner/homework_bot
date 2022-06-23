@@ -35,7 +35,7 @@ def get_api_answer(current_timestamp):
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
 
-    ...
+    return params
 
 
 def check_response(response):
@@ -44,12 +44,11 @@ def check_response(response):
 
 
 def parse_status(homework):
-    homework_name = ...
-    homework_status = ...
-
+#    response = requests.get(ENDPOINT, headers=HEADERS)
+#    homework_name = response.json().get('homework_name')
+#    homework_status = response.json().get('status')
     ...
-
-    verdict = ...
+#    verdict = HOMEWORK_STATUSES[homework_status]
 
     ...
 
@@ -62,6 +61,7 @@ def check_tokens():
 
 def main():
     """Основная логика работы бота."""
+    homework_statuses = requests.get(url=ENDPOINT, headers=HEADERS, params=get_api_answer(current_timestamp))
 
     ...
 
