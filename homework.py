@@ -1,12 +1,11 @@
 import os
 import time
 import logging
-#import telegram
+import telegram
 import requests
 from logging import StreamHandler
 from dotenv import load_dotenv
 
-from telegram import Bot
 
 load_dotenv()
 
@@ -113,8 +112,6 @@ def check_tokens():
 
 def main():
     """Основная логика работы бота."""
-#    homework_statuses = requests.get(url=ENDPOINT, headers=HEADERS, params=get_api_answer(current_timestamp))
-
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
     message = ''
