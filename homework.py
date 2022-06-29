@@ -40,8 +40,9 @@ formatter = logging.Formatter(
 
 handler.setFormatter(formatter)
 
+
 def send_message(bot, message):
-    """Отправка сообщения об изменившемся статусе """
+    """Отправка сообщения об изменившемся статусе."""
     try:
         bot.send_message(
             chat_id=TELEGRAM_CHAT_ID,
@@ -50,6 +51,7 @@ def send_message(bot, message):
         logger.info('Сообщение отправлено')
     except Exception as error:
         logger.error(f'Сообщение не отправлено, ошибка - {error}')
+
 
 def get_api_answer(current_timestamp):
     """Делает запрос к API, ответ приводит к типам данных Python."""
@@ -72,6 +74,7 @@ def get_api_answer(current_timestamp):
     except Exception:
         raise logger.error('Ответ от сервера в неверном формате')
 
+
 def check_response(response):
     """Проверяет ответ API на корректность."""
     if type(response) != dict:
@@ -82,6 +85,7 @@ def check_response(response):
     if type(homeworks) != list:
         raise TypeError('Homeworks не является списком')
     return homeworks[0]
+
 
 def parse_status(homework):
     """Извлекается информацию о статусе работы."""
@@ -103,11 +107,13 @@ def parse_status(homework):
     message = f'Изменился статус проверки работы "{homework_name}". {verdict}'
     return message
 
+
 def check_tokens():
-    """Проверка наличия обязательных токенов"""
+    """Проверка наличия обязательных токенов."""
     if not PRACTICUM_TOKEN or not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
         return False
     return True
+
 
 def main():
     """Основная логика работы бота."""
@@ -131,13 +137,14 @@ def main():
                 STATUS = new_status
             else:
                 logger.debug('Статус не поменялся')
-           
+
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             logger.error(message)
             send_message(bot, message)
 
         time.sleep(RETRY_TIME)
+
 
 if __name__ == '__main__':
     main()
