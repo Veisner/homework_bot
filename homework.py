@@ -13,32 +13,15 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-RETRY_TIME = 600
+RETRY_TIME = 600    # частота отправки запросов в секундах
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
-HOMEWORK_STATUSES = {
+HOMEWORK_VERDICTS = {
     'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename='program.log',
-    format='%(asctime)s, %(levelname)s, %(message)s'
-)
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = StreamHandler()
-logger.addHandler(handler)
-
-formatter = logging.Formatter(
-    '%(asctime)s - %(levelname)s - %(message)s'
-)
-
-handler.setFormatter(formatter)
 
 
 def send_message(bot, message):
@@ -77,13 +60,14 @@ def get_api_answer(current_timestamp):
 
 def check_response(response):
     """Проверяет ответ API на корректность."""
-    if type(response) != dict:
+    if not isinstance(response, dict):
         raise TypeError('Ошибка в типе ответа API')
     if 'homeworks' not in response:
         raise KeyError('Ключ "homework" отсутствует в словаре')
     homeworks = response['homeworks']
-    if type(homeworks) != list:
+    if not isinstance(homeworks, list):
         raise TypeError('Homeworks не является списком')
+    print(homeworks)
     return homeworks[0]
 
 
@@ -100,19 +84,19 @@ def parse_status(homework):
     homework_status = homework.get('status')
     if (homework_name or homework_status) is None:
         raise ValueError('Не найдено значение')
-    if homework_status not in HOMEWORK_STATUSES:
+    if homework_status not in HOMEWORK_VERDICTS:
         logger.error(f'Неизвестный статус {homework_status} домашней работы')
         raise Exception(f'Неизвестный статус работы - {homework_status}')
-    verdict = HOMEWORK_STATUSES[homework_status]
+    verdict = HOMEWORK_VERDICTS[homework_status]
     message = f'Изменился статус проверки работы "{homework_name}". {verdict}'
     return message
 
 
 def check_tokens():
     """Проверка наличия обязательных токенов."""
-    if not PRACTICUM_TOKEN or not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-        return False
-    return True
+    if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
+        return True
+    return False
 
 
 def main():
@@ -143,8 +127,25 @@ def main():
             logger.error(message)
             send_message(bot, message)
 
-        time.sleep(RETRY_TIME)
+        finally:
+            time.sleep(RETRY_TIME)
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        level=logging.DEBUG,
+        filename='program.log',
+        format='%(asctime)s, %(levelname)s, %(message)s'
+    )
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    handler = StreamHandler()
+    logger.addHandler(handler)
+
+    formatter = logging.Formatter(
+        '%(asctime)s - %(levelname)s - %(message)s'
+    )
+
+    handler.setFormatter(formatter)
     main()
