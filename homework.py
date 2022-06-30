@@ -23,6 +23,17 @@ HOMEWORK_VERDICTS = {
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = StreamHandler()
+logger.addHandler(handler)
+
+formatter = logging.Formatter(
+    '%(asctime)s - %(levelname)s - %(message)s'
+)
+
+handler.setFormatter(formatter)
+
 
 def send_message(bot, message):
     """Отправка сообщения об изменившемся статусе."""
@@ -67,7 +78,7 @@ def check_response(response):
     homeworks = response['homeworks']
     if not isinstance(homeworks, list):
         raise TypeError('Homeworks не является списком')
-    print(homeworks)
+    # print(homeworks)
     return homeworks[0]
 
 
@@ -137,15 +148,4 @@ if __name__ == '__main__':
         filename='program.log',
         format='%(asctime)s, %(levelname)s, %(message)s'
     )
-
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    handler = StreamHandler()
-    logger.addHandler(handler)
-
-    formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s - %(message)s'
-    )
-
-    handler.setFormatter(formatter)
     main()
