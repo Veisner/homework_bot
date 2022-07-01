@@ -13,7 +13,7 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-RETRY_TIME = 600    # частота отправки запросов в секундах
+RETRY_TIME = 3000    # частота отправки запросов в секундах
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
@@ -91,6 +91,7 @@ def parse_status(homework):
         raise KeyError('В ответе API отсутсвует ключ homework_name')
     if 'status' not in homework:
         raise KeyError('В ответе API отсутсвует ключ status')
+    # print(homework)
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
     if (homework_name or homework_status) is None:
@@ -105,9 +106,7 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверка наличия обязательных токенов."""
-    if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
-        return True
-    return False
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
 def main():
